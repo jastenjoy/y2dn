@@ -1,0 +1,58 @@
+version: '3.1'
+
+services:
+  y2dn-db:
+    image: mysql:8.0
+    container_name: y2dn-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: y2dn_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - y2dn
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    platform: linux/amd64
+    environment:
+      PMA_HOST: y2dn-db
+      UPLOAD_LIMIT: 50M
+    depends_on:
+      - y2dn-db
+    ports:
+      - "81:80"
+    networks:
+      - y2dn
+
+  y2dn:
+    build:
+      context: ./
+    container_name: y2dn
+    environment:
+      DB_HOST: y2dn-db
+    volumes:
+      - .:/var/www/html
+    networks:
+      - y2dn
+
+  nginx:
+    image: nginx:latest
+    container_name: y2dn-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www/html
+    depends_on:
+      - y2dn
+    networks:
+      - y2dn
+
+networks:
+  y2dn:
+
+volumes:
+  mysql_data:
