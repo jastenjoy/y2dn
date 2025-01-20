@@ -14,10 +14,10 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+# COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-RUN composer install --no-interaction --no-dev --optimize-autoloader
+# RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
