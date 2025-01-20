@@ -1,0 +1,37 @@
+name: y2dn # It's good practice to specify a version
+services:
+  y2dn:
+    container_name: y2dn-app
+    build: # Use build, not image
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80" # Usually web servers listen on port 80 inside the container
+    volumes:
+      - ./app:/var/www/html
+    depends_on:
+      - y2dn-db
+    networks:
+      - y2dn
+
+  y2dn-db:
+    image: mysql:8.0
+    container_name: y2dn-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root # For development, but CHANGE THIS FOR PRODUCTION
+      MYSQL_DATABASE: y2dn_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password # For development, but CHANGE THIS FOR PRODUCTION
+    ports:
+      - "3306:3306" # Only needed for external access
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - y2dn
+
+volumes:
+  mysql_data:
+
+networks:
+  y2dn:
+    driver: bridge
